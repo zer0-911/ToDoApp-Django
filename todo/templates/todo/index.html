@@ -10,39 +10,44 @@
   <body>
     <section class="todoapp">
       <header class="header">
-        <h1>todos</h1>
-        <input
-          class="new-todo"
-          placeholder="What needs to be done?"
-          autofocus
-        />
+        <h1>Dj Todos</h1>
+        <form method="POST" action="{% url 'create' %}">
+          {% csrf_token %}
+          <input class="new-todo" placeholder="Mau apa hari ini?" name="title" autofocus>
+        </form>
       </header>
       <!-- This section should be hidden by default and shown when there are todos -->
       <section class="main">
-        <input id="toggle-all" class="toggle-all" type="checkbox" />
-        <label for="toggle-all">Mark all as complete</label>
+        <!-- <input id="toggle-all" class="toggle-all" type="checkbox" />
+        <label for="toggle-all">Mark all as complete</label> -->
         <ul class="todo-list">
           <!-- These are here just to show the structure of the list items -->
           <!-- List items should get the class `editing` when editing and `completed` when marked as completed -->
-          <li class="completed">
+          {% if items %} {% for item in items %}
+          <li {% if item.status %}class="completed" {% endif %}>
             <div class="view">
-              <input class="toggle" type="checkbox" checked />
-              <label>Taste JavaScript</label>
-              <a href="{% url 'delete' 10 %}" class="destroy"></a>
+              <form action="{% url 'update' item.id %}" method="post">
+              {% csrf_token %}
+              <input class="toggle" type="checkbox" onclick="this.form.submit()" {% if item.status %}checked{% endif %}>
+              <label>{{ item.title }}</label>
+              <a href="{% url 'delete' item.id %}" class="destroy"></a>
+              </form>          
             </div>
           </li>
+          {% endfor %} 
+          {% endif %}
         </ul>
       </section>
       <footer class="footer">
         <ul class="filters">
           <li>
-            <a class="selected" href="{% url 'index' %}">All</a>
+            <a {% if request.path == '/todo/' %}class="selected" {% endif %} href="{% url 'index' %}">All</a>
           </li>
           <li>
-            <a href="{% url 'done' %}">Done</a>
+            <a {% if request.path == '/todo/done/' %}class="selected" {% endif %} href="{% url 'done' %}">Done</a>
           </li>
           <li>
-            <a href="{% url 'pending' %}">Pending</a>
+            <a {% if request.path == '/todo/pending/' %}class="selected" {% endif %} href="{% url 'pending' %}">Pending</a>
           </li>
         </ul>
         <a href="{% url 'delete_all' %}" class="clear-completed">Delete all</a>
@@ -51,9 +56,7 @@
     <footer class="info">
       <p>Double-click to edit a todo</p>
       <!-- Remove the below line ↓ -->
-      <p>Template by <a href="http://sindresorhus.com">Sindre Sorhus</a></p>
-      <!-- Change this out with your name and url ↓ -->
-      <p>Created by <a href="http://todomvc.com">you</a></p>
+      <p>Created by <a href="http://todomvc.com">Zer0-911</a></p>
       <p>Part of <a href="http://todomvc.com">TodoMVC</a></p>
     </footer>
   </body>
